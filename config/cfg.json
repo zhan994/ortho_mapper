@@ -1,0 +1,23 @@
+{
+  "txt_path": "/home/zhan/work/github/colmap_detailed/proj/sparse/0_aligned_enu/images_Twc.txt",
+  "img_path": "/home/zhan/work/github/colmap_detailed/proj/images/",
+  "terr_path": "/home/zhan/work/github/colmap_detailed/proj/sparse/0_aligned_enu/points3D.txt",
+  "img_size": [
+    5280,
+    3956
+  ],
+  "intrinsics": [
+    3729.2161642019246,
+    3729.4524950280502,
+    2640,
+    1978
+  ],
+  "gsd": 0.2,
+  "terr": {
+    "ku": 3,
+    "kv": 3,
+    "grid_size": 5.0,
+    "percent": 0.1,
+    "ct_kd_interp": 3
+  }
+}

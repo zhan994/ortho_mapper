@@ -91,6 +91,7 @@ GPSTransform::EllToENU(const std::vector<Eigen::Vector3d> &ell,
                        const double lat0, const double lon0) const {
   // Convert GPS (lat / lon / alt) to ECEF
   std::vector<Eigen::Vector3d> xyz = EllToXYZ(ell);
+  printf("%.2f %.2f %.2f", xyz[0][0], xyz[0][1], xyz[0][2]);
 
   return XYZToENU(xyz, lat0, lon0);
 }
