@@ -8,7 +8,7 @@
 
 ## run
 
-For images which has EXIF for GPS, use 'dev_3.8' in https://github.com/zhan994/colmap_detailed.
+For images which has EXIF for GPS, use 'dev_3.10' in [Colmap](https://github.com/zhan994/colmap_detailed.git)
 
 ```bash
 ./scripts/shell/sfm.sh
