@@ -16,7 +16,7 @@
   "terr": {
     "ku": 3,
     "kv": 3,
-    "grid_size": 5.0,
+    "grid_size": 10.0,
     "percent": 0.1,
     "ct_kd_interp": 3
   }

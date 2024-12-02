@@ -42,7 +42,7 @@ public:
   // defining the origin of the ENU frame
   /**
    * \brief Convert GPS (lat / lon / alt) to ENU coords. 
-   * with lat0 and lon0 defining the origin of the ENU frame
+   * with lat0 and lon0 defining the origin of the ENU frame (ell[0])
    * 
    * \param ell 
    * \param lat0 
@@ -55,7 +55,7 @@ public:
 
   /**
    * \brief Convert ECEF to ENU coords. 
-   * with lat0 and lon0 defining the origin of the ENU frame
+   * with lat0 and lon0 defining the origin of the ENU frame (xyz[0])
    * 
    * \param xyz 
    * \param lat0 
