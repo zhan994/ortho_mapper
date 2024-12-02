@@ -161,3 +161,37 @@ GPSTransform::ENUToXYZ(const std::vector<Eigen::Vector3d> &enu,
 
   return xyz;
 }
+
+std::vector<Eigen::Vector2d>
+GPSTransform::EllToMercator(const std::vector<Eigen::Vector2d> &ell) const {
+  std::vector<Eigen::Vector2d> mercator(ell.size());
+
+  for (std::size_t i = 0; i < ell.size(); ++i) {
+    const double lat = DegToRad(ell[i](0));
+    const double lon = DegToRad(ell[i](1));
+    const double alt = ell[i](2);
+
+    mercator[i](0) = a_ * lon;
+    mercator[i](1) = a_ * std::log(tan(M_PI / 4 + lat / 2));
+    mercator[i](2) = alt;
+  }
+
+  return mercator;
+}
+
+std::vector<Eigen::Vector2d>
+GPSTransform::MercatorToEll(const std::vector<Eigen::Vector2d> &mercator) const {
+  std::vector<Eigen::Vector2d> ell(mercator.size());
+
+  for (std::size_t i = 0; i < ell.size(); ++i) {
+    const double x = mercator[i](0);
+    const double y = mercator[i](1);
+    const double alt = mercator[i](2);
+
+    ell[i](0) = RadToDeg(x / a_);
+    ell[i](1) = RadToDeg(2 * (std::atan(std::exp(y / a_)) - M_PI / 4));
+    ell[i](2) = alt;
+  }
+
+  return ell;
+}
