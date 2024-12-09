@@ -91,7 +91,6 @@ GPSTransform::EllToENU(const std::vector<Eigen::Vector3d> &ell,
                        const double lat0, const double lon0) const {
   // Convert GPS (lat / lon / alt) to ECEF
   std::vector<Eigen::Vector3d> xyz = EllToXYZ(ell);
-  printf("%.2f %.2f %.2f", xyz[0][0], xyz[0][1], xyz[0][2]);
 
   return XYZToENU(xyz, lat0, lon0);
 }
@@ -162,9 +161,9 @@ GPSTransform::ENUToXYZ(const std::vector<Eigen::Vector3d> &enu,
   return xyz;
 }
 
-std::vector<Eigen::Vector2d>
-GPSTransform::EllToMercator(const std::vector<Eigen::Vector2d> &ell) const {
-  std::vector<Eigen::Vector2d> mercator(ell.size());
+std::vector<Eigen::Vector3d>
+GPSTransform::EllToMercator(const std::vector<Eigen::Vector3d> &ell) const {
+  std::vector<Eigen::Vector3d> mercator(ell.size());
 
   for (std::size_t i = 0; i < ell.size(); ++i) {
     const double lat = DegToRad(ell[i](0));
@@ -179,19 +178,92 @@ GPSTransform::EllToMercator(const std::vector<Eigen::Vector2d> &ell) const {
   return mercator;
 }
 
-std::vector<Eigen::Vector2d>
-GPSTransform::MercatorToEll(const std::vector<Eigen::Vector2d> &mercator) const {
-  std::vector<Eigen::Vector2d> ell(mercator.size());
+std::vector<Eigen::Vector3d>
+GPSTransform::XYZToMercator(const std::vector<Eigen::Vector3d> &xyz) const {
+  return EllToMercator(XYZToEll(xyz));
+}
+
+std::vector<Eigen::Vector3d>
+GPSTransform::ENUToMercator(const std::vector<Eigen::Vector3d> &enu,
+                            const double lat0, const double lon0,
+                            const double alt0) const {
+  return EllToMercator(ENUToEll(enu, lat0, lon0, alt0));
+}
+
+std::vector<Eigen::Vector3d> GPSTransform::MercatorToEll(
+    const std::vector<Eigen::Vector3d> &mercator) const {
+  std::vector<Eigen::Vector3d> ell(mercator.size());
 
   for (std::size_t i = 0; i < ell.size(); ++i) {
     const double x = mercator[i](0);
     const double y = mercator[i](1);
     const double alt = mercator[i](2);
 
-    ell[i](0) = RadToDeg(x / a_);
-    ell[i](1) = RadToDeg(2 * (std::atan(std::exp(y / a_)) - M_PI / 4));
+    ell[i](0) = RadToDeg(2 * (std::atan(std::exp(y / a_)) - M_PI / 4));
+    ell[i](1) = RadToDeg(x / a_);
     ell[i](2) = alt;
   }
 
   return ell;
+}
+
+std::vector<Eigen::Vector3d> GPSTransform::MercatorToXYZ(
+    const std::vector<Eigen::Vector3d> &mercator) const {
+  return EllToXYZ(MercatorToEll(mercator));
+}
+
+std::vector<Eigen::Vector3d>
+GPSTransform::MercatorToENU(const std::vector<Eigen::Vector3d> &mercator,
+                            const double lat0, const double lon0) const {
+  return EllToENU(MercatorToEll(mercator), lat0, lon0);
+}
+
+std::vector<Eigen::Quaterniond> GPSTransform::XYZToENURotation(
+    const std::vector<Eigen::Quaterniond> &rotation_ecef, const double lat0,
+    const double lon0) const {
+  std::vector<Eigen::Quaterniond> rotation_enu(rotation_ecef.size());
+
+  // ECEF to ENU Rot :
+  const double cos_lat0 = std::cos(DegToRad(lat0));
+  const double sin_lat0 = std::sin(DegToRad(lat0));
+
+  const double cos_lon0 = std::cos(DegToRad(lon0));
+  const double sin_lon0 = std::sin(DegToRad(lon0));
+
+  Eigen::Matrix3d R;
+  R << -sin_lon0, cos_lon0, 0., -sin_lat0 * cos_lon0, -sin_lat0 * sin_lon0,
+      cos_lat0, cos_lat0 * cos_lon0, cos_lat0 * sin_lon0, sin_lat0;
+  for (std::size_t i = 0; i < rotation_ecef.size(); ++i) {
+    Eigen::Matrix3d R_ecef = rotation_ecef[i].toRotationMatrix();
+    rotation_enu[i] = Eigen::Quaterniond(R * R_ecef).normalized();
+  }
+
+  return rotation_enu;
+}
+
+std::vector<Eigen::Quaterniond> GPSTransform::ENUToXYZRotation(
+    const std::vector<Eigen::Quaterniond> &rotation_enu, const double lat0,
+    const double lon0) const {
+  std::vector<Eigen::Quaterniond> rotation_ecef(rotation_enu.size());
+
+  // ECEF to ENU Rot :
+  const double cos_lat0 = std::cos(DegToRad(lat0));
+  const double sin_lat0 = std::sin(DegToRad(lat0));
+
+  const double cos_lon0 = std::cos(DegToRad(lon0));
+  const double sin_lon0 = std::sin(DegToRad(lon0));
+
+  Eigen::Matrix3d R;
+  R << -sin_lon0, cos_lon0, 0., -sin_lat0 * cos_lon0, -sin_lat0 * sin_lon0,
+      cos_lat0, cos_lat0 * cos_lon0, cos_lat0 * sin_lon0, sin_lat0;
+
+  // R is ECEF to ENU so Transpose to get inverse
+  R.transposeInPlace();
+
+  for (std::size_t i = 0; i < rotation_enu.size(); ++i) {
+    Eigen::Matrix3d R_enu = rotation_enu[i].toRotationMatrix();
+    rotation_ecef[i] = Eigen::Quaterniond(R * R_enu).normalized();
+  }
+
+  return rotation_ecef;
 }

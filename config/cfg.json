@@ -1,23 +1,12 @@
 {
-  "txt_path": "/home/zhan/work/github/colmap_detailed/proj/sparse/0_aligned_enu/images_Twc.txt",
-  "img_path": "/home/zhan/work/github/colmap_detailed/proj/images/",
-  "terr_path": "/home/zhan/work/github/colmap_detailed/proj/points3D.ply",
-  "img_size": [
-    5280,
-    3956
-  ],
-  "intrinsics": [
-    3729.2161642019246,
-    3729.4524950280502,
-    2640,
-    1978
-  ],
+  "txt_path": "/home/zhan/work/github/colmap_detailed/proj1/sparse/0_aligned_ecef/images_Twc_updated.txt",
+  "img_path": "/home/zhan/work/github/colmap_detailed/proj1/images/",
+  "img_size": [5280, 3956],
+  "intrinsics": [3716.25, 3716.11, 2639.56, 1962.19],
   "gsd": 0.2,
   "terr": {
-    "ku": 3,
-    "kv": 3,
-    "grid_size": 10.0,
-    "percent": 0.1,
-    "ct_kd_interp": 3
+    "grid_size": 5.0,
+    "percent": 0.3,
+    "ct_kd_interp": 5
   }
 }

@@ -68,9 +68,9 @@ template <typename T> double StdDev(const std::vector<T> &elems) {
   return std::sqrt(Variance(elems));
 }
 
-Eigen::Isometry3d GetPose(double qw, double qx, double qy, double qz,
-                          const Eigen::Vector3d &position) {
-  Eigen::Isometry3d T_enu_camera(Eigen::Quaterniond(qw, qx, qy, qz));
-  T_enu_camera.translation() = position;
+Eigen::Isometry3d GetPose(const Eigen::Quaterniond &rot,
+                          const Eigen::Vector3d &pos) {
+  Eigen::Isometry3d T_enu_camera(rot);
+  T_enu_camera.translation() = pos;
   return T_enu_camera;
 }

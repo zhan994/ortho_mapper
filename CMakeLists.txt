@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(PCL REQUIRED)
 find_package(OpenCV REQUIRED)
+find_package(TIFF REQUIRED)
 
 include_directories(
   include
@@ -24,4 +25,5 @@ target_link_libraries(${PROJECT_NAME}
   jsoncpp
   ${PCL_LIBRARIES}
   ${OpenCV_LIBRARIES}
+  ${TIFF_LIBRARIES}
 )

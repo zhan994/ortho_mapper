@@ -12,10 +12,11 @@
 #ifndef ORTHO_H
 #define ORTHO_H
 
-#include "blender.h"
 #include "gps.h"
 #include "terr.h"
 #include "utils.h"
+
+#include <tiffio.h>
 
 class OrthoImage {
 public:
@@ -28,6 +29,15 @@ public:
    *
    */
   void Work();
+
+  /**
+   * \brief 获取Tiff
+   *
+   * \param lt_merct_x 左上角mercator xy
+   * \param lt_merct_y
+   * \return std::string
+   */
+  std::string GetTiff(double &lt_merct_x, double &lt_merct_y);
 
 private:
   /**
@@ -44,6 +54,12 @@ private:
    *
    */
   void GetData();
+
+  /**
+   * \brief init tiff
+   *
+   */
+  void InitTiff();
 
   /**
    * \brief update frame
@@ -97,23 +113,39 @@ private:
    * \return float
    */
   float ComputeScore(const Eigen::Vector3d &point_in_enu,
-                      const Eigen::Vector3d &camera_in_enu);
+                     const Eigen::Vector3d &camera_in_enu);
 
-  std::string txt_path_, img_path_, terr_path_;
-  std::vector<Frame> frames_;
-  GPSTransform gps_tform_;
+  /**
+   * \brief 合并轨迹在TIFF上
+   *
+   * \param merged 合并后的数据
+   */
+  void AddTraj(cv::Mat &merged);
+
+  /**
+   * \brief 颜色矫正
+   *
+   * \param gamma 矫正系数
+   */
+  void CorrectTiff(double gamma);
 
   Eigen::Matrix3d camera_K_;
   int img_w_, img_h_;
 
-  Eigen::Vector2d enu_min_xy_, enu_max_xy_;
+  std::string txt_path_, img_path_;
+  Eigen::Vector3d ori_ell_, ori_ecef_, ori_enu_, ori_merct_;
+  std::vector<Frame> frames_;
+  PointCloud::Ptr map_pcl_enu_;
+
+  GPSTransform gps_tform_;
+
+  Eigen::Vector3d enu_min_, enu_max_;
+  Eigen::Vector3d merct_min_, merct_max_;
   double gsd_;
-  int res_w_, res_h_;
+  int result_width_, result_height_;
   cv::Mat result_img_, score_layer_, traj_img_;
 
   std::shared_ptr<Terr> terr_ptr_;
-  PointCloud::Ptr map_pcl_;
-  int ku_, kv_;
   double grid_size_;
   double percent_;
   int ct_kd_interp_;

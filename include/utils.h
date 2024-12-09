@@ -22,19 +22,24 @@
 #include <json/json.h>
 #include <limits>
 #include <list>
+#include <memory>
 #include <stdexcept>
+#include <vector>
 
+#include <Eigen/Core>
+#include <Eigen/StdVector>
 #include <opencv2/opencv.hpp>
 #include <pcl/common/common.h>
 #include <pcl/common/transforms.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/io/ply_io.h>
+#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include "alignment.h"
-
-typedef pcl::PointXYZINormal PointT;
+typedef pcl::PointXYZI PointT;
 typedef pcl::PointCloud<PointT> PointCloud;
 
 // Check if the given floating point number is a not-a-number (NaN) value.
@@ -68,27 +73,31 @@ template <typename T> double StdDev(const std::vector<T> &elems);
 /**
  * \brief Get Pose using Isometry3d
  *
- * \param qw
- * \param qx
- * \param qy
- * \param qz
- * \param position
+ * \param rot
+ * \param pos
  * \return Eigen::Isometry3d
  */
-Eigen::Isometry3d GetPose(double qw, double qx, double qy, double qz,
-                          const Eigen::Vector3d &position);
+Eigen::Isometry3d GetPose(const Eigen::Quaterniond &rot,
+                          const Eigen::Vector3d &pos);
 
 struct Frame {
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-  std::string fp;                 // file name
-  Eigen::Isometry3d T_enu_camera; // extrinsics
+  std::string img_name; // file name
+  int img_id;
+
+  Eigen::Vector3d pos_ecef;
+  Eigen::Quaterniond rot_ecef;
+
+  Eigen::Vector3d pos_ell;
+
+  Eigen::Vector3d pos_enu;
+  Eigen::Quaterniond rot_enu;
+  Eigen::Isometry3d T_enu_camera;
 
   // FOV
   Eigen::Vector3d min_pt;
   Eigen::Vector3d max_pt;
 };
-
-EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION_CUSTOM(Frame)
 
 #endif // UTILS_H
