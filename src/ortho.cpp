@@ -285,7 +285,7 @@ void OrthoImage::Work() {
     }
 
     // note: gaussian blur to avoid aliasing
-    cv::GaussianBlur(image, image, cv::Size(11, 11), 0);
+    cv::GaussianBlur(image, image, cv::Size(3, 3), 0);
 
     Eigen::Vector3d f_merct_min = gps_tform_.ENUToMercator(
         {f.min_pt}, ori_ell_[0], ori_ell_[1], ori_ell_[2])[0];
