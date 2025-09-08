@@ -1,6 +1,8 @@
 # ortho_mapper
 
-**A repo. which used to easily check the quality of SfM through generating orthoimage.**
+**A simple and easy-to-use package for checking the quality of SfM through generating orthoimage.**
+
+**This framework leverages COLMAP-based results to generate orthoimage quickly.**
 
 ## 3rdparty
 - Eigen3
