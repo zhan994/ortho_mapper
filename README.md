@@ -6,12 +6,14 @@
 
 <img src="example.png" style="zoom:80%;" />
 
-## 3rdparty
+## Prerequisited
 - Eigen3
 - OpenCV3
 - PCL
+- TIFF
+- JSONCPP
 
-## example
+## Example
 
 To test this package, you can use images which has **EXIF for GPS**, use **'dev_3.10'** in [colmap](https://github.com/zhan994/colmap_detailed.git)
 
