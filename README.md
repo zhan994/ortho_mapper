@@ -4,8 +4,6 @@
 
 **This is a simple and easy-to-use package for checking the quality of SfM through generating orthoimage quickly.**
 
-
-
 <img src="example.png" style="zoom:80%;" />
 
 ## Prerequisited
@@ -32,3 +30,16 @@ make -j
 ./build/ortho_mapper config/cfg.json
 ```
 
+## Citation
+
+```
+@misc{he2025multisensorfusionapproachrapid,
+      title={A Multi-Sensor Fusion Approach for Rapid Orthoimage Generation in Large-Scale UAV Mapping}, 
+      author={Jialei He and Zhihao Zhan and Zhituo Tu and Xiang Zhu and Jie Yuan},
+      year={2025},
+      eprint={2503.01202},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2503.01202}, 
+}
+```
