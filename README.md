@@ -1,8 +1,10 @@
 # ortho_mapper
 
-**A simple and easy-to-use package for checking the quality of SfM through generating orthoimage.**
+**The repository contains the source code for ortho_mapper module of our system. This partial release aims to provide insight into the underlying implementation of our approach and may be useful for researchers working in related areas.**
 
-**This framework leverages COLMAP-based results to generate orthoimage quickly.**
+**This is a simple and easy-to-use package for checking the quality of SfM through generating orthoimage quickly.**
+
+
 
 <img src="example.png" style="zoom:80%;" />
 
