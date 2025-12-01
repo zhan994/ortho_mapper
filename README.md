@@ -33,13 +33,15 @@ make -j
 ## Citation
 
 ```
-@misc{he2025multisensorfusionapproachrapid,
-      title={A Multi-Sensor Fusion Approach for Rapid Orthoimage Generation in Large-Scale UAV Mapping}, 
-      author={Jialei He and Zhihao Zhan and Zhituo Tu and Xiang Zhu and Jie Yuan},
-      year={2025},
-      eprint={2503.01202},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2503.01202}, 
-}
+@INPROCEEDINGS{11247677,
+  author={He, Jialei and Zhan, Zhihao and Tu, Zhituo and Zhu, Xiang and Yuan, Jie},
+  booktitle={2025 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)}, 
+  title={A Multi-Sensor Fusion Approach for Rapid Orthoimage Generation in Large-Scale UAV Mapping}, 
+  year={2025},
+  volume={},
+  number={},
+  pages={6808-6815},
+  keywords={Visualization;Accuracy;Structure from motion;Robot vision systems;Sensor fusion;Autonomous aerial vehicles;Cameras;Robustness;Sensors;Global Positioning System},
+  doi={10.1109/IROS60139.2025.11247677}}
+
 ```
