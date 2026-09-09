@@ -33,3 +33,7 @@
 
 .vscode/
 build/
+
+result.tif
+*.ply
+traj.png

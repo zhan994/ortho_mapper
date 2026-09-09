@@ -1,8 +1,8 @@
 {
-  "txt_path": "/home/zhan/work/github/colmap_detailed/proj1/sparse/0_aligned_ecef/images_Twc_updated.txt",
-  "img_path": "/home/zhan/work/github/colmap_detailed/proj1/images/",
-  "img_size": [5280, 3956],
-  "intrinsics": [3716.25, 3716.11, 2639.56, 1962.19],
+  "txt_path": "/home/zhan/work/github/colmap/proj/sparse/valid_aligned_ecef/images_Twc_updated.txt",
+  "img_path": "/home/zhan/work/github/colmap/proj/images/",
+  "img_size": [3000, 4000],
+  "intrinsics": [3281.2717118091527, 3281.5276231231323, 1517.2391244924579, 1967.1965029552541],
   "gsd": 0.2,
   "terr": {
     "grid_size": 5.0,
