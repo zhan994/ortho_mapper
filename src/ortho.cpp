@@ -270,7 +270,7 @@ float OrthoImage::ComputeScore(const Eigen::Vector3d &point_in_enu,
 
   Eigen::Vector3d view_dir = point_in_enu - camera_in_enu;
   Eigen::Vector3d view_dir_normal = view_dir.normalized();
-  Eigen::Vector3d normal(0, 0, 1);
+  Eigen::Vector3d normal(0, 0, -1); // fix ENU nadir vector
   float score = view_dir_normal.dot(normal);
   return score;
 }
