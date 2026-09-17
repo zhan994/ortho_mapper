@@ -39,6 +39,29 @@ public:
    */
   std::string GetTiff(double &lt_merct_x, double &lt_merct_y);
 
+  /**
+   * \brief Save the terrain height used by the DOM as a float DSM.
+   *
+   * The output has the same size, pixel alignment and valid mask as the DOM.
+   * Pixel values are absolute altitudes obtained by converting the ENU terrain
+   * points back to geodetic coordinates.
+   *
+   * \return std::string output DSM path
+   */
+  std::string GetDSM();
+
+  /**
+   * \brief Save a colorized visualization of the DSM.
+   *
+   * Valid elevations are mapped from blue (low) to red (high), while invalid
+   * pixels remain black. The image has exactly the same size as the DSM.
+   *
+   * \param min_height minimum valid altitude in meters
+   * \param max_height maximum valid altitude in meters
+   * \return std::string output visualization path
+   */
+  std::string GetDSMVisualization(float &min_height, float &max_height);
+
 private:
   /**
    * \brief load cfg file by jsoncpp
@@ -143,7 +166,7 @@ private:
   Eigen::Vector3d merct_min_, merct_max_;
   double gsd_;
   int result_width_, result_height_;
-  cv::Mat result_img_, score_layer_, traj_img_;
+  cv::Mat result_img_, score_layer_, traj_img_, dsm_img_;
 
   std::shared_ptr<Terr> terr_ptr_;
   double grid_size_;

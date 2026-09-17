@@ -37,3 +37,4 @@ build/
 result.tif
 *.ply
 traj.png
+dsm*

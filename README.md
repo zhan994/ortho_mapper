@@ -33,6 +33,11 @@ make -j
 ./build/ortho_mapper config/cfg.json
 ```
 
+The program writes `result.tif` and an aligned single-band, 32-bit floating point `dsm.tif`. 
+DSM pixels use the same terrain samples and valid footprint as the orthoimage. 
+Invalid DSM pixels are stored as `NaN`; valid values are the absolute altitudes returned by the repository's ENU-to-geodetic conversion.
+It also writes an aligned `dsm_vis.png`, using blue for low elevations, red for high elevations, and black for invalid pixels.
+
 ## Citation
 
 ```

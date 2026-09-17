@@ -60,7 +60,8 @@ GPSTransform::XYZToEll(const std::vector<Eigen::Vector3d> &xyz) const {
 
     // Latitude
     double lat = atan2(z, radius_xy);
-    double alt;
+    // Initialize altitude before it is used as the previous iteration value.
+    double alt = 0.0;
 
     for (std::size_t j = 0; j < 100; ++j) {
       const double sin_lat0 = sin(lat);
