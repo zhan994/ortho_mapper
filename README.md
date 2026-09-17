@@ -38,6 +38,10 @@ DSM pixels use the same terrain samples and valid footprint as the orthoimage.
 Invalid DSM pixels are stored as `NaN`; valid values are the absolute altitudes returned by the repository's ENU-to-geodetic conversion.
 It also writes an aligned `dsm_vis.png`, using blue for low elevations, red for high elevations, and black for invalid pixels.
 
+<img src="example_dsm.jpg" style="zoom:80%;" />
+
+
+
 ## Citation
 
 ```
