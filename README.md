@@ -21,7 +21,7 @@
 To test this package, you can use images which has **EXIF for GPS**, use **'dev_3.10'** in [colmap](https://github.com/zhan994/colmap_detailed.git)
 
 ```bash
-./work/shell/sfm_cam_gps.sh
+./work/shell/sfm_cam_gps.sh fx,fy,cx,cy,k1,k2,p1,p2
 ```
 
 Change intrinsics about camera in **'config/cfg.json'**.
@@ -37,6 +37,10 @@ The program writes `result.tif` and an aligned single-band, 32-bit floating poin
 DSM pixels use the same terrain samples and valid footprint as the orthoimage. 
 Invalid DSM pixels are stored as `NaN`; valid values are the absolute altitudes returned by the repository's ENU-to-geodetic conversion.
 It also writes an aligned `dsm_vis.png`, using blue for low elevations, red for high elevations, and black for invalid pixels.
+
+<img src="example_dsm.jpg" style="zoom:80%;" />
+
+
 
 ## Citation
 
