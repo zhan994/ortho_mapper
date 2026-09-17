@@ -205,6 +205,10 @@ void OrthoImage::InitTiff() {
       traj_img_.at<cv::Vec3b>(y, x) = cv::Vec3b(0, 0, 0);
     }
   }
+
+  // Keep invalid DSM pixels distinguishable from valid negative altitudes.
+  dsm_img_.create(result_height_, result_width_, CV_32FC1);
+  dsm_img_.setTo(std::numeric_limits<float>::quiet_NaN());
 }
 
 void OrthoImage::SetCameraFOV(Frame &frame) {
@@ -320,10 +324,8 @@ void OrthoImage::Work() {
               {ori_merct_, point_in_merct}, ori_ell_[0], ori_ell_[1])[1];
 
           double z = terr_ptr_->GetHeight(point_in_enu[0], point_in_enu[1]);
-          if (std::isinf(z)) {
-            std::cout << "z is inf" << std::endl;
+          if (std::isinf(z))
             continue;
-          }
           point_in_enu[2] = z;
           float score = ComputeScore(point_in_enu, camera_in_enu);
           if (score > score_layer_.at<float>(res_y, res_x)) {
@@ -338,6 +340,17 @@ void OrthoImage::Work() {
                              (res_color[2] == 0);
               res_color = is_zero ? cv::Vec3b(1, 1, 1) : res_color;
               result_img_.at<cv::Vec3b>(res_y, res_x) = res_color;
+
+              // Use exactly the terrain point sampled by the DOM. ENU z is a
+              // local height, so convert the complete point back to geodetic
+              // coordinates to obtain the absolute altitude.
+              if (std::isnan(dsm_img_.at<float>(res_y, res_x))) {
+                Eigen::Vector3d point_in_ell =
+                    gps_tform_.ENUToEll({point_in_enu}, ori_ell_[0],
+                                        ori_ell_[1], ori_ell_[2])[0];
+                dsm_img_.at<float>(res_y, res_x) =
+                    static_cast<float>(point_in_ell[2]);
+              }
             }
           }
         }
@@ -394,6 +407,91 @@ std::string OrthoImage::GetTiff(double &lt_merct_x, double &lt_merct_y) {
   lt_merct_y = merct_min_[1] + gsd_ * result_height_;
 
   cv::imwrite(traj_name, merged);
+
+  return file_name;
+}
+
+std::string OrthoImage::GetDSM() {
+  std::cout << "Save DSM..." << std::endl;
+
+  const std::string file_name = "dsm.tif";
+  TIFF *out = TIFFOpen(file_name.c_str(), "w");
+  if (!out)
+    return std::string();
+
+  TIFFSetField(out, TIFFTAG_IMAGEWIDTH, dsm_img_.cols);
+  TIFFSetField(out, TIFFTAG_IMAGELENGTH, dsm_img_.rows);
+  TIFFSetField(out, TIFFTAG_SAMPLESPERPIXEL, 1);
+  TIFFSetField(out, TIFFTAG_BITSPERSAMPLE, 32);
+  TIFFSetField(out, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
+  TIFFSetField(out, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
+  TIFFSetField(out, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
+  TIFFSetField(out, TIFFTAG_SAMPLEFORMAT, SAMPLEFORMAT_IEEEFP);
+
+  const tsize_t linebytes = dsm_img_.cols * sizeof(float);
+  TIFFSetField(out, TIFFTAG_ROWSPERSTRIP,
+               TIFFDefaultStripSize(out, linebytes));
+
+  for (int row = 0; row < dsm_img_.rows; ++row) {
+    if (TIFFWriteScanline(out, dsm_img_.ptr<float>(row), row, 0) < 0) {
+      TIFFClose(out);
+      return std::string();
+    }
+  }
+
+  TIFFClose(out);
+  return file_name;
+}
+
+std::string OrthoImage::GetDSMVisualization(float &min_height,
+                                            float &max_height) {
+  min_height = std::numeric_limits<float>::max();
+  max_height = std::numeric_limits<float>::lowest();
+
+  for (int row = 0; row < dsm_img_.rows; ++row) {
+    const float *dsm_row = dsm_img_.ptr<float>(row);
+    for (int col = 0; col < dsm_img_.cols; ++col) {
+      const float height = dsm_row[col];
+      if (std::isfinite(height)) {
+        min_height = std::min(min_height, height);
+        max_height = std::max(max_height, height);
+      }
+    }
+  }
+
+  if (min_height > max_height) {
+    std::cerr << "DSM contains no valid height." << std::endl;
+    return std::string();
+  }
+
+  cv::Mat normalized(dsm_img_.size(), CV_8UC1, cv::Scalar(0));
+  cv::Mat invalid_mask(dsm_img_.size(), CV_8UC1, cv::Scalar(255));
+  const float height_range = max_height - min_height;
+
+  for (int row = 0; row < dsm_img_.rows; ++row) {
+    const float *dsm_row = dsm_img_.ptr<float>(row);
+    uchar *normalized_row = normalized.ptr<uchar>(row);
+    uchar *mask_row = invalid_mask.ptr<uchar>(row);
+    for (int col = 0; col < dsm_img_.cols; ++col) {
+      const float height = dsm_row[col];
+      if (!std::isfinite(height))
+        continue;
+
+      mask_row[col] = 0;
+      if (height_range > std::numeric_limits<float>::epsilon()) {
+        normalized_row[col] = cv::saturate_cast<uchar>(
+            (height - min_height) / height_range * 255.0f);
+      }
+    }
+  }
+
+  cv::Mat visualization;
+  cv::applyColorMap(normalized, visualization, cv::COLORMAP_JET);
+  visualization.setTo(cv::Scalar(0, 0, 0), invalid_mask);
+
+  const std::string file_name = "dsm_vis.png";
+  if (!cv::imwrite(file_name, visualization))
+    return std::string();
 
   return file_name;
 }
