@@ -18,7 +18,7 @@
 
 ## Example
 
-To test this package, you can use images which has **EXIF for GPS**, use **'dev_3.10'** in [colmap](https://github.com/zhan994/colmap_detailed.git)
+To test this package, you can use images which has **EXIF for GPS**, use **'dev_3.10'** in [colmap](https://github.com/zhan994/colmap/tree/dev_3.10).
 
 ```bash
 ./work/shell/sfm_cam_gps.sh fx,fy,cx,cy,k1,k2,p1,p2
