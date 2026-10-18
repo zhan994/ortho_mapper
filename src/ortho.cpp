@@ -1,11 +1,15 @@
 #include "ortho.h"
+#include "colmap_camera.h"
+
+#include <filesystem>
 
 OrthoImage::OrthoImage(const std::string &cfg) : map_pcl_enu_(new PointCloud) {
   std::cout << "Cons. OrthoImage: " << cfg << std::endl;
   terr_ptr_ = std::make_shared<Terr>();
 
-  if (LoadCfg(cfg))
-    std::cout << "Load cfg done." << std::endl;
+  if (!LoadCfg(cfg))
+    throw std::runtime_error("Failed to load config: " + cfg);
+  std::cout << "Load cfg done." << std::endl;
 
   GetData();
   InitTiff();
@@ -23,17 +27,26 @@ bool OrthoImage::LoadCfg(const std::string &cfg) {
   }
 
   if (reader.parse(in, value)) {
-    txt_path_ = value["txt_path"].asString();
-    img_path_ = value["img_path"].asString();
-
-    img_w_ = value["img_size"][0].asInt();
-    img_h_ = value["img_size"][1].asInt();
-
-    double fx = value["intrinsics"][0].asDouble();
-    double fy = value["intrinsics"][1].asDouble();
-    double cx = value["intrinsics"][2].asDouble();
-    double cy = value["intrinsics"][3].asDouble();
-    camera_K_ << fx, 0, cx, 0, fy, cy, 0, 0, 1;
+    const std::filesystem::path project(value["proj_path"].asString());
+    const auto resolve = [&project](const std::string &path) {
+      return (project / path).lexically_normal().string();
+    };
+    txt_path_ = value.isMember("txt_relative_path")
+                    ? resolve(value["txt_relative_path"].asString())
+                    : value["txt_path"].asString();
+    img_path_ = value.isMember("img_relative_path")
+                    ? resolve(value["img_relative_path"].asString())
+                    : value["img_path"].asString();
+    const std::string camera_path = resolve(value.get(
+        "camera_model_path", "calib/sparse/valid/cameras.txt").asString());
+    const ColmapCamera camera = ReadColmapCamera(camera_path);
+    camera_id_ = camera.id;
+    img_w_ = camera.width;
+    img_h_ = camera.height;
+    camera_K_ << camera.fx, 0, camera.cx, 0, camera.fy, camera.cy, 0, 0, 1;
+    std::cout << "Camera " << camera.id << " (" << camera.model << ") from "
+              << camera_path << ": " << img_w_ << " x " << img_h_
+              << ", K:\n" << camera_K_ << std::endl;
 
     gsd_ = value["gsd"].asDouble();
     grid_size_ = value["terr"]["grid_size"].asDouble();
@@ -82,7 +95,9 @@ void OrthoImage::GetData() {
       if ((iss >> img_id >> qw >> qx >> qy >> qz >> tx >> ty >> tz >>
            camera_id >> fn)) {
         ++count;
-        std::string image_name = img_path_ + fn;
+        if (camera_id != camera_id_)
+          throw std::runtime_error("Image camera ID does not match cameras.txt: " + fn);
+        std::string image_name = (std::filesystem::path(img_path_) / fn).string();
         Eigen::Quaterniond q_ecef(qw, qx, qy, qz);
         Eigen::Vector3d pos_ecef(tx, ty, tz);
         rot_ecef_vec.push_back(q_ecef);

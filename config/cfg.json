@@ -1,8 +1,8 @@
 {
-  "txt_path": "/home/zhan/work/github/colmap/proj/sparse/valid_aligned_ecef/images_Twc_updated.txt",
-  "img_path": "/home/zhan/work/github/colmap/proj/images/",
-  "img_size": [3000, 4000],
-  "intrinsics": [3281.2717118091527, 3281.5276231231323, 1517.2391244924579, 1967.1965029552541],
+  "proj_path": "/home/zhan/work/github/colmap/proj/",
+  "txt_relative_path": "sparse/valid_aligned_ecef/images_Twc_updated.txt",
+  "img_relative_path": "images",
+  "camera_model_path": "calib/sparse/valid/cameras.txt",
   "gsd": 0.2,
   "terr": {
     "grid_size": 5.0,
