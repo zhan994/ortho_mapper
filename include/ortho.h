@@ -154,6 +154,7 @@ private:
 
   Eigen::Matrix3d camera_K_;
   int img_w_, img_h_;
+  int camera_id_;
 
   std::string txt_path_, img_path_;
   Eigen::Vector3d ori_ell_, ori_ecef_, ori_enu_, ori_merct_;

@@ -21,10 +21,17 @@
 To test this package, you can use images which has **EXIF for GPS**, use **'dev_3.10'** in [colmap](https://github.com/zhan994/colmap/tree/dev_3.10).
 
 ```bash
-./work/shell/sfm_cam_gps.sh fx,fy,cx,cy,k1,k2,p1,p2
+./work/shell/sfm_cam_gps_auto_calib.sh
 ```
 
-Change intrinsics about camera in **'config/cfg.json'**.
+Set `proj_path` in **'config/cfg.json'** to your COLMAP project directory.
+`txt_relative_path`, `img_relative_path`, and `camera_model_path` are resolved relative to it; absolute paths are also accepted. 
+A relative `proj_path` is resolved from the working directory. Legacy `txt_path` and `img_path` are still accepted when their corresponding relative-path fields are absent.
+
+Image width, height, and intrinsics are read automatically from `camera_model_path` (default: `calib/sparse/valid/cameras.txt`); `img_size` and `intrinsics` are no longer needed. 
+Supported models are `SIMPLE_PINHOLE`, `PINHOLE`, `SIMPLE_RADIAL`, `RADIAL`, `OPENCV`, and `FULL_OPENCV`.
+The current mapper requires exactly one camera, matching the image camera IDs.
+Only the intrinsic matrix is used; distortion correction is not applied.
 
 ```bash
 mkdir build && cd build

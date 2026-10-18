@@ -1,6 +1,6 @@
 #include "ortho.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv) try {
   if (argc != 2) {
     std::cout << "Usage: ./ortho_mapper <path-to-cfg>/cfg.json" << std::endl;
     return 1;
@@ -25,4 +25,7 @@ int main(int argc, char **argv) {
   else
     std::cout << "DSM altitude range: unavailable" << std::endl;
   return 0;
+} catch (const std::exception &error) {
+  std::cerr << "Error: " << error.what() << std::endl;
+  return 1;
 }
